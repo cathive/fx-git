@@ -17,6 +17,7 @@
 package com.cathive.fx.git.explorer;
 
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.scene.PerspectiveCameraBuilder;
@@ -31,6 +32,8 @@ import javafx.stage.StageStyle;
  */
 public final class GitExplorerApp extends Application {
 
+    private final Logger LOGGER = Logger.getLogger(GitExplorerApp.class.getName());
+
     private ResourceBundle resources;
     private GitExplorerPane gitPane = new GitExplorerPane();
 
@@ -38,7 +41,9 @@ public final class GitExplorerApp extends Application {
     @Override
     public void init() throws Exception {
         super.init();
-        resources = ResourceBundle.getBundle(getClass().getName());
+        final String resourceBundleName = getClass().getName();
+        LOGGER.info(String.format("Loading resources from resource bundle: '%s.'", resourceBundleName));
+        resources = ResourceBundle.getBundle(resourceBundleName);
     }
 
     @Override

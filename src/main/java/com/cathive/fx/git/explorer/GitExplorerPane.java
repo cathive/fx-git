@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import com.cathive.fx.git.ref.RefMenuButton;
+import com.cathive.fx.git.repository.CurrentHeadLabel;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,11 +41,14 @@ import javafx.stage.DirectoryChooserBuilder;
  */
 public final class GitExplorerPane extends BorderPane {
 
+    private final Logger LOGGER = Logger.getLogger(GitExplorerApp.class.getName());
+
     @FXML private ResourceBundle resources;
     @FXML private URL location;
 
     @FXML private ListView<Repository> localRepositoriesListView;
     @FXML private RefMenuButton refMenuButton;
+    @FXML private CurrentHeadLabel currentHeadLabel;
 
     public GitExplorerPane() {
 
@@ -77,10 +82,9 @@ public final class GitExplorerPane extends BorderPane {
                 .build();
         final File dir = dc.showDialog(getScene().getWindow());
         if (dir != null) {
-            final Repository repo = new FileRepositoryBuilder() //
+            LOGGER.info(String.format("Selected directory: '%s'.", dir.getAbsolutePath()));
+            final Repository repo = new FileRepositoryBuilder()
                 .setWorkTree(dir)
-                .findGitDir() // scan up the file system tree
-                .readEnvironment() // scan environment GIT_* variables
                 .build();
             this.localRepositoriesListView.getItems().add(repo);
         }

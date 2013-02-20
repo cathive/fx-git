@@ -40,7 +40,10 @@ limitations under the License.
   <bottom>
     <HBox fx:id="statusBar" maxWidth="1.7976931348623157E308" padding="${DEFAULT_INSETS}" prefHeight="0.0" prefWidth="0.0">
       <children>
-        <HBox alignment="CENTER_LEFT" prefHeight="${COMPUTED_SIZE}" prefWidth="${COMPUTED_SIZE}" HBox.hgrow="SOMETIMES" />
+        <HBox alignment="CENTER_LEFT" prefHeight="${COMPUTED_SIZE}" prefWidth="${COMPUTED_SIZE}" HBox.hgrow="SOMETIMES">
+          <Label text="HEAD:"/>
+          <CurrentHeadLabel fx:id="currentHeadLabel"/>
+        </HBox>
         <HBox alignment="CENTER_RIGHT" prefHeight="${COMPUTED_SIZE}" prefWidth="${COMPUTED_SIZE}" HBox.hgrow="SOMETIMES">
           <children>
             <ProgressBar fx:id="progressBar" prefWidth="${COMPUTED_SIZE}" progress="0.0" HBox.hgrow="NEVER" />
@@ -79,5 +82,6 @@ limitations under the License.
     // sure to fix things manually afterwards.
     localRepositoriesListView.setCellFactory(REPO_LIST_CELL_FACTORY);
     refMenuButton.repositoryProperty().bind(localRepositoriesListView.getSelectionModel().selectedItemProperty());
+    currentHeadLabel.repositoryProperty().bind(localRepositoriesListView.getSelectionModel().selectedItemProperty());
   ]]></fx:script>
 </fx:root>

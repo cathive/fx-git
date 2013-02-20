@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -51,6 +52,8 @@ import javafx.scene.control.ToggleGroupBuilder;
  * @author Benjamin P. Jung
  */
 public class RefMenuButton extends MenuButton {
+
+    private static final Logger LOGGER = Logger.getLogger(RefMenuButton.class.getName());
 
     private static final ResourceBundle resources = FxGit.getResources();
     private static final URL STYLESHEET = RefMenuButton.class.getResource("RefMenuButton.css");
@@ -88,6 +91,8 @@ public class RefMenuButton extends MenuButton {
             @Override
             public void changed(ObservableValue<? extends Repository> observable, Repository oldValue, Repository newValue) {
 
+                // TODO Use an instance of FxRepository and bind to it's properties. 
+
                 // Clears the current list of branches and tags.
                 getItems().clear();
                 refMenuItems.clear();
@@ -98,6 +103,7 @@ public class RefMenuButton extends MenuButton {
                 final Git git = new Git(newValue);
                 try {
                     final List<Ref> branches = git.branchList().call();
+                    LOGGER.info(String.format("Repository contains %d branches.", branches.size()));
                     if (!branches.isEmpty()) {
                         getItems().add(new HeadingMenuItem(resources.getString("branches.title")));
                         for (final Ref branch: branches) {
@@ -107,17 +113,16 @@ public class RefMenuButton extends MenuButton {
                 } catch (final GitAPIException e) {
                     throw new RuntimeException(e);
                 }
-                try {
-                    final List<Ref> tags = git.tagList().call();
-                    if (!tags.isEmpty()) {
-                        getItems().add(new HeadingMenuItem(resources.getString("tags.title")));
-                        for (final Ref tag: tags) {
-                            getItems().add(createRefMenuItem(tag));
-                        }
+
+                final Map<String, Ref> tags = newValue.getTags();
+                LOGGER.info(String.format("Repository contains %d tags.", tags.size()));
+                if (!tags.isEmpty()) {
+                    getItems().add(new HeadingMenuItem(resources.getString("tags.title")));
+                    for (final Map.Entry<String, Ref> tagEntry: tags.entrySet()) {
+                        getItems().add(createRefMenuItem(tagEntry.getValue()));
                     }
-                } catch (final GitAPIException e) {
-                    throw new RuntimeException(e);
                 }
+
             }
 
         });
@@ -166,13 +171,14 @@ public class RefMenuButton extends MenuButton {
     }
 
     /**
-     * A special separator item that contains the name of the "tag section"
+     * A special separator item that contains the name of the "ref section"
      * that is about to follow, e.g. "branches" or "tags".
      * @author Benjamin P. Jung
      */
     private static class HeadingMenuItem extends SeparatorMenuItem {
 
-        final Label label;
+        /** Graphical representation of this special separator menu item */
+        private final Label label;
 
         HeadingMenuItem() {
             super();
@@ -180,12 +186,15 @@ public class RefMenuButton extends MenuButton {
             label = LabelBuilder.create()
                     .stylesheets(STYLESHEET.toExternalForm())
                     .build();
+            label.textProperty().bind(this.textProperty());
             this.setContent(label);
         }
+
         HeadingMenuItem(final String text) {
             this();
-            this.label.setText(text);
+            this.setText(text);
         }
+
     }
 
 }

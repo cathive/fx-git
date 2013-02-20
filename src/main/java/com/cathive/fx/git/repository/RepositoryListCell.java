@@ -38,7 +38,7 @@ public class RepositoryListCell extends ListCell<Repository> {
         super.updateItem(item, empty);
 
         if (item != null) {
-
+            
             setText(null);
 
             String branchText = null;
